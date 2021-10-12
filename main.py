@@ -1,6 +1,6 @@
 import GraphMesh
 
-graph = GraphMesh.GraphMesh(10,10)
+graph = GraphMesh.GraphMesh(5,5)
 graph.fullramdon()
 graph.show()
 newgraph = graph.kruskal()
