@@ -1,0 +1,4 @@
+          
+          if(self.find(Arr,a.myVertex_A()-1,a.myVertex_B()-1) = False):
+              self.union(Arr,self.numvertexs,a.myVertex_A()-1,a.myVertex_B()-1)
+              minimun.addEdge(a)
