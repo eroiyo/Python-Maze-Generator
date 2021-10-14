@@ -263,6 +263,8 @@ class GraphMesh:
           edgelist.update({a.id: a})
       while (len(Dijkstra_nodelist) >0):
           v = Dijkstra_nodelist.pop(0)
+          if (end == v):
+              break
           Dijkstra_nodelist = self.D_relax(v,explored,Dijkstra_nodelist,edgelist)
           calls  = calls + 1
       print("Dijkstra:", calls)
@@ -277,5 +279,5 @@ class GraphMesh:
                   first =node
               last = node
           node= node + 1
-      self.Dijkstra(first,first)
+      self.Dijkstra(first,last)
 

@@ -1,6 +1,11 @@
 import GraphMesh
+import sys
 
-graph = GraphMesh.GraphMesh(10,10)
+print(sys.argv)
+height = int(sys.argv[1])
+width = int(sys.argv[2])
+
+graph = GraphMesh.GraphMesh(height,width)
 graph.fullramdon()
 graph.show()
 newgraph = graph.kruskal()
