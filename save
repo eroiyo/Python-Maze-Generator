@@ -1,4 +1,53 @@
+def D_relax(self,v,explored,Dijkstra_nodelist,edgelist):
+      explored.append(v)
+      a = self.list[v-1]
+      temp = a.values()
+      
+      doo = True
+      for x in temp:
+          y = edgelist.get(x-1)
+          if(not (y.vertex_A-1 == v-1)):
+              next = y.vertex_A
+          else:
+              next = y.vertex_B
+          doo = True
+          for x in explored:
+              if(x == next):
+                  doo =False
+          if(doo == True):
+              Dijkstra_nodelist.append(next)
+      return Dijkstra_nodelist
+
+
+              
+  def Dijkstra(self, origin, end):
+      Dijkstra_nodelist = []
+      Dijkstra_nodelist.append(origin)
+      calls=0
+      explored = []
+      edgelist = dict()
+      iterator = 0
+
+      while not self.edgeL.empty():
+          a = self.edgeL.get()
+          edgelist.update({iterator: a})
+          iterator=iterator+1
           
-          if(self.find(Arr,a.myVertex_A()-1,a.myVertex_B()-1) = False):
-              self.union(Arr,self.numvertexs,a.myVertex_A()-1,a.myVertex_B()-1)
-              minimun.addEdge(a)
+      while (len(Dijkstra_nodelist) >0):
+          v = Dijkstra_nodelist.pop(0)
+          Dijkstra_nodelist = self.D_relax(v,explored,Dijkstra_nodelist,edgelist)
+          calls  = calls + 1
+      print("Dijkstra:", calls)
+
+  def short_find(self):
+      first = "e"
+      node = 1
+      print("")
+      for x in self.list:
+          if (len(x.values()) == 1):
+              if(first == "e"):
+                  first =node
+              last = node
+          node= node + 1
+      self.Dijkstra(first,first)
+

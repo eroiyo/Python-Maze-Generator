@@ -1,6 +1,8 @@
 import queue
 import random
 import Edge
+
+explored =[]
 class GraphMesh:
   def __init__(self, anchor, lenght):
       self.edgeL= queue.PriorityQueue()
@@ -44,16 +46,15 @@ class GraphMesh:
               row = row*self.anchor
               row = row-self.anchor
               vertex = row+column
-              
-              newA = Edge.Edge((vertex),(vertex-self.anchor),weight,rowo,column,"up")
-              newB = Edge.Edge((vertex-self.anchor),(vertex),weight,rowo-1,column,"down")
 
               self.edge_id = self.edge_id+1
+              newA = Edge.Edge((vertex),(vertex-self.anchor),weight,self.edge_id,rowo,column,"up")
               self.list[vertex-1].update({"up": self.edge_id})
               self.edgeL.put(newA)
               self.character[vertex-1]=self.character[vertex-1]+8
 
               self.edge_id = self.edge_id+1
+              newB = Edge.Edge((vertex-self.anchor),(vertex),weight,self.edge_id,rowo-1,column,"down")
               self.list[(vertex-self.anchor)-1].update({"down": self.edge_id})
               self.edgeL.put(newB)
               self.character[(vertex-self.anchor)-1] = self.character[(vertex-self.anchor)-1]+4
@@ -68,15 +69,15 @@ class GraphMesh:
               row = row*self.anchor
               row=row-self.anchor
               vertex =row+column
-              newA = Edge.Edge((vertex-1),(vertex+self.anchor)-1,weight,rowo,column,"down")
-              newB = Edge.Edge((vertex+self.anchor)-1,(vertex-1),weight,rowo+1,column,"up")
               
               self.edge_id = self.edge_id+1
+              newA = Edge.Edge((vertex),(vertex+self.anchor),weight,self.edge_id,rowo,column,"down")
               self.list[vertex-1].update({"down": self.edge_id})
               self.edgeL.put(newA)
               self.character[vertex-1]=self.character[vertex-1]+4
 
               self.edge_id = self.edge_id+1
+              newB = Edge.Edge((vertex+self.anchor),(vertex),weight,self.edge_id,rowo+1,column,"up")
               self.list[(vertex+self.anchor)-1].update({"up": self.edge_id})
               self.edgeL.put(newB)
               self.character[vertex+self.anchor-1]=self.character[vertex+self.anchor-1]+8
@@ -91,17 +92,16 @@ class GraphMesh:
                 row = row*self.anchor
                 row = row-self.anchor
                 vertex =row+column
-                
-                newA = Edge.Edge((vertex),(vertex+1),weight,rowo,column,"right")
-                newB = Edge.Edge((vertex+1),(vertex),weight,rowo,column+1,"left")
 
                 self.edge_id = self.edge_id+1
+                newA = Edge.Edge((vertex),(vertex+1),weight,self.edge_id,rowo,column,"right")
                 self.list[vertex-1].update({"right": self.edge_id})
                 self.edgeL.put(newA)
                 self.character[vertex-1]=self.character[vertex-1]+1
 
-                self.edgeL.put(newB)
                 self.edge_id = self.edge_id+1
+                newB = Edge.Edge((vertex+1),(vertex),weight,self.edge_id,rowo,column+1,"left")
+                self.edgeL.put(newB)
                 self.list[(vertex)].update({"left": self.edge_id})
                 self.character[vertex]=self.character[vertex]+2
 
@@ -116,15 +116,15 @@ class GraphMesh:
                 row = row-self.anchor
                 vertex =row+column
                 
-                newA = Edge.Edge((vertex-1),(vertex-2),weight,rowo,column,"left")
-                newB = Edge.Edge((vertex-2),(vertex-1),weight,rowo,column-1,"right")
 
                 self.edge_id = self.edge_id+1
+                newA = Edge.Edge((vertex),(vertex-1),weight,self.edge_id,rowo,column,"left")
                 self.list[vertex-1].update({"left": self.edge_id})
   
                 self.character[vertex-1]=self.character[vertex-1]+2
                 self.edgeL.put(newA)
                 self.edge_id = self.edge_id+1
+                newB = Edge.Edge((vertex-1),(vertex),weight,self.edge_id,rowo,column-1,"right")
                 self.list[(vertex-2)].update({"right": self.edge_id})
                 self.edgeL.put(newB)
                 self.character[vertex-2]=self.character[vertex-2]+1
@@ -190,6 +190,16 @@ class GraphMesh:
       if(edge.direction == "left"):
           self.aristand_LEFT(edge.row,edge.column, edge.weight,False)
 
+  def addEdgeDouble(self, edge):
+      if(edge.direction == "up"):
+          self.aristand_UP(edge.row,edge.column, edge.weight,False)
+      if(edge.direction == "down"):
+          self.aristand_DOWN(edge.row,edge.column, edge.weight,False)
+      if(edge.direction == "right"):
+          self.aristand_RIGHT(edge.row,edge.column, edge.weight,False)
+      if(edge.direction == "left"):
+          self.aristand_LEFT(edge.row,edge.column, edge.weight,False)
+
   def addEdgeF(self, edge):
       e=0
       i=0
@@ -219,5 +229,53 @@ class GraphMesh:
           a = self.edgeL.get()
           if(self.find(Arr,a.myVertex_A()-1,a.myVertex_B()-1) == False):
             self.union(Arr,self.numvertexs,a.myVertex_A()-1,a.myVertex_B()-1)
-            minimun.addEdge(a)
+            minimun.addEdgeDouble(a)
       return minimun
+
+  def D_relax(self,v,explored,Dijkstra_nodelist,edgelist):
+      explored.append(v)
+      a = self.list[v-1]
+      temp = a.values()
+      doo = True
+      for x in temp:
+          y = edgelist.get(x)
+          if(not (y.vertex_A-1 == v-1)):
+              next = y.vertex_A
+          else:
+              next = y.vertex_B
+          doo = True
+          for x in explored:
+              if(x == next):
+                  doo =False
+          if(doo == True):
+              Dijkstra_nodelist.append(next)
+      return Dijkstra_nodelist
+              
+  def Dijkstra(self, origin, end):
+      Dijkstra_nodelist = []
+      Dijkstra_nodelist.append(origin)
+      calls=0
+      explored = []
+      edgelist = dict()
+      iterator = 0
+      while not self.edgeL.empty():
+          a = self.edgeL.get()
+          edgelist.update({a.id: a})
+      while (len(Dijkstra_nodelist) >0):
+          v = Dijkstra_nodelist.pop(0)
+          Dijkstra_nodelist = self.D_relax(v,explored,Dijkstra_nodelist,edgelist)
+          calls  = calls + 1
+      print("Dijkstra:", calls)
+
+  def short_find(self):
+      first = "e"
+      node = 1
+      print("")
+      for x in self.list:
+          if (len(x.values()) == 1):
+              if(first == "e"):
+                  first =node
+              last = node
+          node= node + 1
+      self.Dijkstra(first,first)
+

@@ -1,13 +1,14 @@
 from functools import total_ordering
 @total_ordering
 class Edge:
-    def __init__(self, vertex_A, vertex_B, weight, row, column, direction):
+    def __init__(self, vertex_A, vertex_B, weight, id, row, column, direction):
         self.vertex_A =vertex_A
         self.vertex_B=vertex_B
         self.weight=weight
         self.row=row
         self.column=column
         self.direction=direction
+        self.id = id
 
     def __eq__(self, other):
         return self.weight == other.weight
